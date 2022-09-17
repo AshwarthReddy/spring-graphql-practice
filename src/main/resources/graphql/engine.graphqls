@@ -1,6 +1,7 @@
 type Query {
     customers: [Customer],
-    customerById : ID
+    customerById( id: ID): Customer
+    hello: String
 }
 
 
