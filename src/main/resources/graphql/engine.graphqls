@@ -1,0 +1,11 @@
+type Query {
+    customers: [Customer],
+    customerById : ID
+}
+
+
+type Customer {
+    id: ID,
+    name :String
+
+}
