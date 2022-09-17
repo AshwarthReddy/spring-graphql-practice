@@ -6,6 +6,11 @@ type Query {
 
 type Customer {
     id: ID,
-    name :String
+    name :String,
+    profile: Profile
 
+}
+type Profile {
+    id: ID,
+    customerId: ID
 }
