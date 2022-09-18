@@ -1,15 +1,14 @@
 package com.anr.controller;
 
-import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.graphql.data.method.annotation.BatchMapping;
-import org.springframework.graphql.data.method.annotation.QueryMapping;
-import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +16,8 @@ import java.util.stream.Stream;
 public class CustomerController {
 
 
+    private final Map<Integer, Customer> DB = new ConcurrentHashMap<>();
+    private final AtomicInteger PK = new AtomicInteger();
     @QueryMapping
     public Mono<String> hello(){
         return Mono.just("Hello from Dubai");
@@ -24,12 +25,21 @@ public class CustomerController {
 
     @QueryMapping
     public Flux<Customer> customers(){
-        return Flux.fromIterable(Stream.of(new Customer(1, "Aswarthana"), new Customer(2, "Bhupathi")).toList());
+        return Flux.fromIterable(DB.values());
     }
 
     @QueryMapping
     public Mono<Customer> customerById(@Argument Integer id){
-        return Mono.just(new Customer(id, Math.random() > .05 ? "Aswarthana" : "Reddy"));
+        return Mono.just(DB.get(id));
+    }
+
+//    @MutationMapping
+    @SchemaMapping(typeName = "Mutation", field = "addCustomer")
+    public Mono<Customer> addCustomer(@Argument String name){
+        int id = PK.incrementAndGet();
+        Customer value = new Customer(id, name);
+        DB.put(id, value);
+        return Mono.just(value);
     }
 
 //    @SchemaMapping(typeName = "Customer")

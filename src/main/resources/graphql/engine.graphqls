@@ -4,6 +4,10 @@ type Query {
     hello: String
 }
 
+type Mutation{
+    addCustomer(name: String): Customer
+}
+
 
 type Customer {
     id: ID,
